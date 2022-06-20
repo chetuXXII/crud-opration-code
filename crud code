@@ -1,0 +1,183 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+
+
+namespace crud_opration
+{
+    public partial class WebForm1 : System.Web.UI.Page
+    {
+        SqlConnection con = new SqlConnection("Data Source=MR_CHETU;Initial Catalog=crudopration;Integrated Security=True");
+        SqlCommand cmd;
+        string subject = "";
+        public string gender = "";
+        
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+           
+
+
+
+        }
+
+        protected void btnsubmit_Click(object sender, EventArgs e)
+        {
+            
+            if (rdbmale.Checked == true)
+            {
+                gender = "Male";
+            }
+            else if (rdbfemale.Checked == true)
+            {
+                gender = "Female";
+            }
+            FileUpload img = (FileUpload)FileUpload1;
+            Byte[] imgByte = null;
+            if (img.HasFile && img.PostedFile != null)
+            {
+                //To create a PostedFile
+                HttpPostedFile File = FileUpload1.PostedFile;
+                //Create byte Array with file len
+                imgByte = new Byte[File.ContentLength];
+                //force the control to load data in array
+                File.InputStream.Read(imgByte, 0, File.ContentLength);
+
+            }
+
+            string queary = "insert into userdata(Id,name,dob,phone,email,gender,subject,city,profile)values('" + txtid.Text + "','" + txtname.Text + "','" + txtdob.Text + "','" + txtphone.Text + "','" + txtemail.Text + "','" + gender + "','" + subject + "','" + ddlcity.SelectedItem.ToString()+ "','@eimg')";
+            con.Open();
+            SqlCommand cmd = new SqlCommand(queary, con);
+           cmd.Parameters.AddWithValue("@eimg", imgByte);
+            int i;
+             i=cmd.ExecuteNonQuery();
+            if (i > 0)
+            {
+                Label10.Text = "data enter successfully";
+                Response.Redirect("WebForm2.aspx");
+            }
+            else
+            {
+                Label10.Text = "error";
+            }
+            con.Close();
+
+        }
+
+       
+
+        protected void chkenglish_CheckedChanged(object sender, EventArgs e)
+        {
+           if(chkenglish.Checked ==true)
+            {
+                subject = subject + "ENGLISH";
+            }
+           else if(chkenglish.Checked==false)
+            {
+                int pos, length;
+                string unchsckedsubject = subject;
+                pos = unchsckedsubject.IndexOf("ENGLISH");
+                length = ("ENGLISH").Length;
+                unchsckedsubject = unchsckedsubject.Remove(pos, length);
+                subject = unchsckedsubject;
+            }
+
+        }
+
+        protected void chkscince_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkenglish.Checked == true)
+            {
+                subject = subject + "SCIENCE";
+            }
+            else if (chkenglish.Checked == false)
+            {
+                int pos, length;
+                string unchsckedsubject = subject;
+                pos = unchsckedsubject.IndexOf("SCIENCE");
+                length = ("SCIENCE").Length;
+                unchsckedsubject = unchsckedsubject.Remove(pos, length);
+                subject = unchsckedsubject;
+            }
+
+        }
+
+        protected void chkmaths_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkenglish.Checked == true)
+            {
+                subject = subject + "MATHS";
+            }
+            else if (chkenglish.Checked == false)
+            {
+                int pos, length;
+                string unchsckedsubject = subject;
+                pos = unchsckedsubject.IndexOf("MATHS");
+                length = ("MATHS").Length;
+                unchsckedsubject = unchsckedsubject.Remove(pos, length);
+                subject = unchsckedsubject;
+            }
+        }
+
+        protected void btndelete_Click(object sender, EventArgs e)
+        {
+            con.Open();
+            string queery = "delete from userdata where Id='" + txtdeleteid.Text + "' ";
+            SqlCommand cmd = new SqlCommand(queery, con);
+            int i;
+            i = cmd.ExecuteNonQuery();
+            if (i > 0)
+            {
+                Label10.Text = "data enter successfully";
+                Response.Redirect("WebForm2.aspx");
+            }
+            else
+            {
+                Label10.Text = "error";
+            }
+            con.Close();
+
+
+        }
+
+        protected void btncencel_Click(object sender, EventArgs e)
+        {
+            FileUpload img = (FileUpload)FileUpload1;
+            Byte[] imgByte = null;
+            if (img.HasFile && img.PostedFile != null)
+            {
+                //To create a PostedFile
+                HttpPostedFile File = FileUpload1.PostedFile;
+                //Create byte Array with file len
+                imgByte = new Byte[File.ContentLength];
+                //force the control to load data in array
+                File.InputStream.Read(imgByte, 0, File.ContentLength);
+
+            }
+            con.Open();
+            string querry = "update userdata set name='" + txtname.Text + "',dob='" + txtdob.Text + "',phone='" + txtphone.Text + "',email='" + txtemail.Text + "',gender='" + gender + "',subject='" + subject + "',city='" + ddlcity.SelectedItem.ToString() + "',profile='@imgByte'  where Id='"+txtid.Text+"'";
+            SqlCommand cmd = new SqlCommand(querry, con);
+            cmd.Parameters.AddWithValue("@eimg", imgByte);
+            int i;
+            i = cmd.ExecuteNonQuery();
+            if (i > 0)
+            {
+                Label10.Text = "data update successfully";
+                Response.Redirect("WebForm2.aspx");
+            }
+            else
+            {
+                Label10.Text = "error";
+            }
+            con.Close();
+
+        
+    }
+    }
+}
